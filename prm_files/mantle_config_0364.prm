@@ -1,0 +1,93 @@
+# A simple setup for convection in a quarter of a 2d shell. See the
+  # manual for more information.
+
+
+  set Dimension                              = 2
+  set Use years in output instead of seconds = true
+  set End time                               = 0.5e9
+  set Output directory                       = ./output_mantle_config_0364 #./output-shell_simple_2d_edits_T0_new9
+
+
+  subsection Material model
+    set Model name = simple
+
+    subsection Simple model
+      set Thermal expansion coefficient = 2.47e-5 # 4e-5
+      set Viscosity                     = 5e21 # 5e21  #3.3e21
+      set Reference temperature         = 1450 # 1500 #1600
+      set Thermal viscosity exponent    = 0.8 # 0.7
+
+    end
+  end
+
+
+  subsection Geometry model
+    set Model name = spherical shell
+
+    subsection Spherical shell
+      set Inner radius  = 3473000
+      set Outer radius  = 6301000
+      set Opening angle = 90
+    end
+  end
+
+
+  subsection Boundary velocity model
+    set Zero velocity boundary indicators       = inner
+    set Tangential velocity boundary indicators = top, left, right
+  end
+
+
+  subsection Heating model
+    set List of model names =  shear heating
+  end
+
+
+  subsection Boundary temperature model
+    set Fixed temperature boundary indicators = top, bottom
+    set List of model names = spherical constant
+
+    subsection Spherical constant
+      set Inner temperature = 3974 #3700
+      set Outer temperature = 774 #500
+    end
+  end
+
+
+  subsection Initial temperature model
+    set Model name = function
+
+    subsection Function
+      set Variable names = x,y
+      set Function constants = k=1e-6,                               tau=3e16,                               r_in = 3473000,                               T_1=774, T_0=3974,                               r_outer=6301000
+      set Function expression = T_1 + (T_0-T_1)*(1-erfc((r_outer - sqrt(x*x + y*y)) /sqrt(k*tau))) + (rand()/32767-0.5)*(3200*0.01)
+    end
+  end
+
+
+  subsection Gravity model
+    set Model name = ascii data
+  end
+
+
+  subsection Mesh refinement
+    set Initial global refinement          = 4
+    set Strategy                           = temperature
+    set Time steps between mesh refinement = 0
+  end
+
+
+  subsection Postprocess
+    set List of postprocessors = visualization, velocity statistics, temperature statistics, heat flux statistics, depth average
+
+    subsection Visualization
+      set Output format                 = vtu
+      set Time between graphical output = 25e6
+      set Number of grouped files       = 0
+      set List of output variables      = material properties
+    end
+
+    subsection Depth average
+      set Time between graphical output = 25e6
+    end
+  end
