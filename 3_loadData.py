@@ -31,5 +31,5 @@ combined_data = np.zeros((len(a_T), n1, n2))
 for i, fn in enumerate(a_T):
     combined_data[i, :, :] = np.load(fn)
 
-np.save('2_allData.npy',combined_data)
+np.save('a_T_all.npy',combined_data)
 
